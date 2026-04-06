@@ -21,9 +21,9 @@ export default function Header({ title, onMenuOpen, role, onRoleChange, theme, o
         >
           <FaBars />
         </Button>
-        <div className="flex flex-col items-center gap-1 text-center">
+        <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:justify-center sm:gap-3">
+          <h1 className={`text-xl font-semibold sm:text-2xl ${isLight ? 'text-zinc-900' : 'text-white'}`}>{title}</h1>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <h1 className={`text-xl font-semibold sm:text-2xl ${isLight ? 'text-zinc-900' : 'text-white'}`}>{title}</h1>
             <div className={`inline-flex rounded-full border p-1 text-xs uppercase tracking-[0.2em] ${isLight ? 'border-zinc-300 bg-zinc-100 text-zinc-600' : 'border-zinc-700 bg-zinc-950/70 text-zinc-300'}`}>
               <button
                 type="button"

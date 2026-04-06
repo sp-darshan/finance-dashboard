@@ -29,7 +29,11 @@ export default function Filters({ filters, categories, onChange, onReset }) {
           <h2 className={`text-lg font-semibold ${isLight ? 'text-zinc-900' : 'text-white'}`}>Filters</h2>
           <p className="text-sm text-zinc-600">Narrow the table by type, category, and date.</p>
         </div>
-        <button className={`text-sm font-medium ${isLight ? 'text-zinc-600 hover:text-zinc-900' : 'text-zinc-300 hover:text-white'}`} onClick={onReset} type="button">
+        <button
+          className={`inline-flex items-center rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${isLight ? 'border-zinc-300 bg-zinc-100 text-zinc-700 hover:bg-zinc-200' : 'border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800'}`}
+          onClick={onReset}
+          type="button"
+        >
           Reset
         </button>
       </div>
