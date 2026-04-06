@@ -41,6 +41,11 @@ export default function Transactions() {
     [visibleTransactions],
   );
 
+  const tablePaginationKey = useMemo(
+    () => `${filters.search}|${filters.type}|${filters.category}|${filters.startDate}|${filters.endDate}|${filters.sortBy}|${filters.groupBy}|${visibleTransactions.length}`,
+    [filters, visibleTransactions.length],
+  );
+
   const handleAddTransaction = (transaction) => {
     if (editingTransaction) {
       updateTransaction(editingTransaction.id, transaction);
@@ -119,6 +124,7 @@ export default function Transactions() {
 
       <Filters filters={filters} categories={categories} onChange={setFilters} onReset={resetFilters} />
       <TransactionTable
+        key={tablePaginationKey}
         transactions={visibleTransactions}
         role={role}
         groupBy={filters.groupBy}

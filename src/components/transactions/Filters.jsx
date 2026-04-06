@@ -27,7 +27,7 @@ export default function Filters({ filters, categories, onChange, onReset }) {
       <div className="mb-4 flex items-center justify-between gap-3">
         <div>
           <h2 className={`text-lg font-semibold ${isLight ? 'text-zinc-900' : 'text-white'}`}>Filters</h2>
-          <p className="text-sm text-zinc-400">Narrow the table by type, category, and date.</p>
+          <p className="text-sm text-zinc-600">Narrow the table by type, category, and date.</p>
         </div>
         <button className={`text-sm font-medium ${isLight ? 'text-zinc-600 hover:text-zinc-900' : 'text-zinc-300 hover:text-white'}`} onClick={onReset} type="button">
           Reset

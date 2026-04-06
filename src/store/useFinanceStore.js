@@ -15,7 +15,7 @@ const defaultFilters = {
 };
 
 const defaultRole = 'viewer';
-const defaultTheme = 'dark';
+const defaultTheme = 'light';
 const defaultCategories = CATEGORIES.map((category) => category.name);
 const STORE_VERSION = 4;
 

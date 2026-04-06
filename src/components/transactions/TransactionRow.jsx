@@ -24,7 +24,7 @@ export default function TransactionRow({ transaction, role, onDelete, onEdit }) 
       </td>
       <td className={`px-4 py-4 text-sm ${isLight ? 'text-zinc-600' : 'text-zinc-300'}`}>{formatDate(transaction.date)}</td>
       <td className={`px-4 py-4 text-sm capitalize ${isLight ? 'text-zinc-600' : 'text-zinc-300'}`}>{transaction.type}</td>
-      <td className={`px-4 py-4 text-right text-sm font-semibold ${isIncome ? (isLight ? 'text-emerald-700' : 'text-zinc-100') : (isLight ? 'text-zinc-700' : 'text-zinc-300')}`}>
+      <td className={`px-4 py-4 text-right text-sm font-semibold ${isIncome ? (isLight ? 'text-emerald-700' : 'text-emerald-400') : (isLight ? 'text-rose-700' : 'text-rose-400')}`}>
         {isIncome ? '+' : '-'}{formatCurrency(transaction.amount)}
       </td>
       {role === 'admin' && (

@@ -46,7 +46,7 @@ function Brand({ isLight }) {
       </div>
       <div>
         <div className={`text-lg font-semibold ${isLight ? 'text-zinc-900' : 'text-white'}`}>Finance Dashboard</div>
-        <div className={`text-xs uppercase tracking-[0.28em] ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>cash flow control</div>
+        <div className={`text-xs uppercase tracking-[0.28em] ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>cash flow control</div>
       </div>
     </div>
   );
