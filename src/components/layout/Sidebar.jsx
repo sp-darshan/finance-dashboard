@@ -24,7 +24,7 @@ export default function Sidebar({ open, onClose, theme = 'dark' }) {
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <button aria-label="Close navigation" className={`absolute inset-0 ${isLight ? 'bg-zinc-900/30' : 'bg-slate-950/70'}`} onClick={onClose} type="button" />
-          <aside className={`absolute inset-y-0 left-0 z-10 w-72 border-r px-5 py-6 backdrop-blur-xl ${isLight ? 'border-zinc-300 bg-zinc-100/95' : 'border-zinc-800 bg-zinc-950/95'}`}>
+          <aside className={`absolute inset-y-0 left-0 z-10 w-72 border-r px-5 py-6 ${isLight ? 'border-zinc-300 bg-zinc-100' : 'border-zinc-800 bg-zinc-950'}`}>
             <Brand isLight={isLight} />
             <nav className="mt-10 space-y-2">
               {navItems.map((item) => (
