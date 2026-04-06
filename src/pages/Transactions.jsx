@@ -7,6 +7,7 @@ import TransactionTable from '../components/transactions/TransactionTable';
 import SummaryCard from '../components/dashboard/SummaryCard';
 import { useTransactions } from '../hooks/useTransactions';
 import { applyTransactionFilters, getSummary } from '../utils/calculations';
+import { exportTransactionsToCsv, exportTransactionsToJson } from '../utils/exporters';
 import { formatCurrency } from '../utils/formatters';
 
 export default function Transactions() {
@@ -18,11 +19,15 @@ export default function Transactions() {
     addTransaction,
     deleteTransaction,
     updateTransaction,
+    resetToInitialLoadedData,
+    isSyncingMock,
     role,
+    theme,
     categories,
     addCategory,
     removeCategory,
   } = useTransactions();
+  const isLight = theme === 'light';
   const [showModal, setShowModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
 
@@ -61,6 +66,18 @@ export default function Transactions() {
     setEditingTransaction(null);
   };
 
+  const handleExportCsv = () => {
+    exportTransactionsToCsv(visibleTransactions);
+  };
+
+  const handleExportJson = () => {
+    exportTransactionsToJson(visibleTransactions);
+  };
+
+  const handleResetToInitialData = () => {
+    resetToInitialLoadedData();
+  };
+
   return (
     <div className="space-y-6">
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -80,21 +97,31 @@ export default function Transactions() {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-bold text-white">Manage your ledger and keep the source data clean.</p>
+          <p className={`text-sm font-bold ${isLight ? 'text-zinc-900' : 'text-white'}`}>Manage your ledger here</p>
         </div>
-        {role === 'admin' ? (
-          <Button onClick={handleOpenAdd} type="button">Add transaction</Button>
-        ) : (
-          <span className="rounded-full border border-zinc-700 bg-zinc-950/70 px-3 py-2 text-xs uppercase tracking-[0.22em] text-zinc-400">
-            Viewer mode: read only
-          </span>
-        )}
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <Button variant="secondary" onClick={handleExportCsv} type="button">Export CSV</Button>
+          <Button variant="secondary" onClick={handleExportJson} type="button">Export JSON</Button>
+          {role === 'admin' ? (
+            <>
+              <Button variant="secondary" onClick={handleResetToInitialData} type="button" disabled={isSyncingMock}>
+                {isSyncingMock ? 'Loading initial data...' : 'Reset to initial loaded data'}
+              </Button>
+              <Button onClick={handleOpenAdd} type="button">Add transaction</Button>
+            </>
+          ) : (
+            <span className={`rounded-full border px-3 py-2 text-xs uppercase tracking-[0.22em] ${isLight ? 'border-zinc-300 bg-zinc-100 text-zinc-600' : 'border-zinc-700 bg-zinc-950/70 text-zinc-400'}`}>
+              Viewer mode: read only
+            </span>
+          )}
+        </div>
       </div>
 
       <Filters filters={filters} categories={categories} onChange={setFilters} onReset={resetFilters} />
       <TransactionTable
         transactions={visibleTransactions}
         role={role}
+        groupBy={filters.groupBy}
         onDelete={deleteTransaction}
         onEdit={handleOpenEdit}
       />

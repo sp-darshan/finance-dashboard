@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CATEGORIES } from '../constants/categories';
+import { fetchMockTransactions } from '../api/mockApi';
 import { seedTransactions } from '../data/transactions';
 
 const defaultFilters = {
@@ -9,11 +10,14 @@ const defaultFilters = {
   search: '',
   startDate: '',
   endDate: '',
+  sortBy: 'date-desc',
+  groupBy: 'none',
 };
 
 const defaultRole = 'viewer';
+const defaultTheme = 'dark';
 const defaultCategories = CATEGORIES.map((category) => category.name);
-const STORE_VERSION = 2;
+const STORE_VERSION = 4;
 
 const createTransactionId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
@@ -21,8 +25,11 @@ const migrateStore = (persistedState = {}, version) => {
   if (!persistedState || typeof persistedState !== 'object') {
     return {
       transactions: seedTransactions,
+      initialLoadedTransactions: seedTransactions,
+      hasLoadedInitialMock: false,
       filters: defaultFilters,
       role: defaultRole,
+      theme: defaultTheme,
       categories: defaultCategories,
     };
   }
@@ -31,16 +38,22 @@ const migrateStore = (persistedState = {}, version) => {
     return {
       ...persistedState,
       transactions: seedTransactions,
-      filters: persistedState.filters ?? defaultFilters,
+      initialLoadedTransactions: persistedState.initialLoadedTransactions ?? seedTransactions,
+      hasLoadedInitialMock: persistedState.hasLoadedInitialMock ?? false,
+      filters: { ...defaultFilters, ...(persistedState.filters ?? {}) },
       role: persistedState.role ?? defaultRole,
+      theme: persistedState.theme ?? defaultTheme,
       categories: persistedState.categories ?? defaultCategories,
     };
   }
 
   return {
     ...persistedState,
-    filters: persistedState.filters ?? defaultFilters,
+    initialLoadedTransactions: persistedState.initialLoadedTransactions ?? seedTransactions,
+    hasLoadedInitialMock: persistedState.hasLoadedInitialMock ?? false,
+    filters: { ...defaultFilters, ...(persistedState.filters ?? {}) },
     role: persistedState.role ?? defaultRole,
+    theme: persistedState.theme ?? defaultTheme,
     categories: persistedState.categories ?? defaultCategories,
   };
 };
@@ -49,9 +62,13 @@ export const useFinanceStore = create(
   persist(
     (set, get) => ({
       transactions: seedTransactions,
+      initialLoadedTransactions: seedTransactions,
+      hasLoadedInitialMock: false,
       filters: defaultFilters,
       role: defaultRole,
+      theme: defaultTheme,
       categories: defaultCategories,
+      isSyncingMock: false,
       addTransaction: (transaction) =>
         set((state) => ({
           transactions: [
@@ -129,8 +146,33 @@ export const useFinanceStore = create(
           filters: { ...state.filters, ...nextFilters },
         })),
       setRole: (role) => set({ role }),
+      setTheme: (theme) => set({ theme }),
       resetFilters: () => set({ filters: defaultFilters }),
       resetDemoData: () => set({ transactions: seedTransactions }),
+      initializeTransactionsFromMock: async () => {
+        const { hasLoadedInitialMock, isSyncingMock } = get();
+
+        if (hasLoadedInitialMock || isSyncingMock) {
+          return;
+        }
+
+        set({ isSyncingMock: true });
+
+        try {
+          const transactions = await fetchMockTransactions();
+          set({
+            transactions,
+            initialLoadedTransactions: transactions,
+            hasLoadedInitialMock: true,
+          });
+        } finally {
+          set({ isSyncingMock: false });
+        }
+      },
+      resetToInitialLoadedData: () =>
+        set((state) => ({
+          transactions: state.initialLoadedTransactions,
+        })),
     }),
     {
       name: 'finance-dashboard-store',
@@ -138,8 +180,11 @@ export const useFinanceStore = create(
       migrate: migrateStore,
       partialize: (state) => ({
         transactions: state.transactions,
+        initialLoadedTransactions: state.initialLoadedTransactions,
+        hasLoadedInitialMock: state.hasLoadedInitialMock,
         filters: state.filters,
         role: state.role,
+        theme: state.theme,
         categories: state.categories,
       }),
     },

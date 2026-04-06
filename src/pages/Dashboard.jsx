@@ -8,10 +8,14 @@ import CategoryChart from '../components/dashboard/CategoryChart';
 import TransactionTable from '../components/transactions/TransactionTable';
 
 export default function Dashboard() {
-  const { transactions, monthlyBalances, categoryTotals, deleteTransaction } = useTransactions();
+  const { transactions, monthlyBalances, categoryTotals, deleteTransaction, filters, theme } = useTransactions();
+  const isLight = theme === 'light';
 
   const summary = useMemo(() => getSummary(transactions), [transactions]);
-  const recentTransactions = transactions.slice(0, 6);
+  const recentTransactions = useMemo(
+    () => [...transactions].sort((left, right) => new Date(right.date) - new Date(left.date)).slice(0, 5),
+    [transactions],
+  );
 
   return (
     <div className="space-y-6">
@@ -29,9 +33,9 @@ export default function Dashboard() {
 
       <section className="space-y-4">
         <div>
-          <p className="text-sm font-bold text-white">The latest activity from your ledger.</p>
+          <p className={`text-sm font-bold ${isLight ? 'text-zinc-900' : 'text-white'}`}>The latest activity from your ledger.</p>
         </div>
-        <TransactionTable transactions={recentTransactions} onDelete={deleteTransaction} />
+        <TransactionTable transactions={recentTransactions} groupBy={filters.groupBy} onDelete={deleteTransaction} />
       </section>
     </div>
   );

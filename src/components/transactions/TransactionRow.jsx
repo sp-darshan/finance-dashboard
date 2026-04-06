@@ -1,53 +1,30 @@
+import { createElement } from 'react';
 import Button from '../ui/Button';
 import {
-  FaBriefcase,
-  FaCar,
-  FaFileInvoiceDollar,
-  FaFilm,
-  FaGraduationCap,
-  FaHeartbeat,
-  FaMoneyBillWave,
-  FaPlane,
-  FaShoppingBag,
   FaPen,
   FaTrashAlt,
-  FaUtensils,
-  FaWallet,
 } from 'react-icons/fa';
-import { formatCurrency, formatDate, getCategoryColor } from '../../utils/formatters';
-
-const CATEGORY_ICONS = {
-  Salary: <FaWallet />,
-  Freelance: <FaBriefcase />,
-  Food: <FaUtensils />,
-  Transport: <FaCar />,
-  Shopping: <FaShoppingBag />,
-  Bills: <FaFileInvoiceDollar />,
-  Health: <FaHeartbeat />,
-  Travel: <FaPlane />,
-  Entertainment: <FaFilm />,
-  Education: <FaGraduationCap />,
-  Cash: <FaMoneyBillWave />,
-  default: <FaWallet />,
-};
+import { formatCurrency, formatDate, getCategoryColor, getCategoryIcon, getFallbackIcon } from '../../utils/formatters';
+import { useTheme } from '../../hooks/useTheme';
 
 export default function TransactionRow({ transaction, role, onDelete, onEdit }) {
+  const { isLight } = useTheme();
   const isIncome = transaction.type === 'income';
 
   return (
-    <tr className="border-b border-white/8 last:border-0">
+    <tr className={`border-b last:border-0 ${isLight ? 'border-zinc-200' : 'border-white/8'}`}>
       <td className="px-4 py-4">
         <div className="flex items-center gap-3">
-          <CategoryBadge category={transaction.category} />
+          <CategoryBadge category={transaction.category} isLight={isLight} />
           <div>
-            <div className="font-medium text-white">{transaction.description}</div>
-            <div className="text-sm text-zinc-400">{transaction.category}</div>
+            <div className={`font-medium ${isLight ? 'text-zinc-900' : 'text-white'}`}>{transaction.description}</div>
+            <div className={`text-sm ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>{transaction.category}</div>
           </div>
         </div>
       </td>
-      <td className="px-4 py-4 text-sm text-zinc-300">{formatDate(transaction.date)}</td>
-      <td className="px-4 py-4 text-sm text-zinc-300 capitalize">{transaction.type}</td>
-      <td className={`px-4 py-4 text-right text-sm font-semibold ${isIncome ? 'text-zinc-100' : 'text-zinc-300'}`}>
+      <td className={`px-4 py-4 text-sm ${isLight ? 'text-zinc-600' : 'text-zinc-300'}`}>{formatDate(transaction.date)}</td>
+      <td className={`px-4 py-4 text-sm capitalize ${isLight ? 'text-zinc-600' : 'text-zinc-300'}`}>{transaction.type}</td>
+      <td className={`px-4 py-4 text-right text-sm font-semibold ${isIncome ? (isLight ? 'text-emerald-700' : 'text-zinc-100') : (isLight ? 'text-zinc-700' : 'text-zinc-300')}`}>
         {isIncome ? '+' : '-'}{formatCurrency(transaction.amount)}
       </td>
       {role === 'admin' && (
@@ -55,7 +32,7 @@ export default function TransactionRow({ transaction, role, onDelete, onEdit }) 
           <div className="flex items-center justify-end gap-2">
             <button
               aria-label="Edit transaction"
-              className="inline-flex items-center justify-center rounded-2xl border border-zinc-700 bg-zinc-900 p-2 text-zinc-200 transition hover:bg-zinc-800 hover:text-white"
+              className={`inline-flex items-center justify-center rounded-2xl border p-2 transition ${isLight ? 'border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900' : 'border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800 hover:text-white'}`}
               onClick={() => onEdit(transaction)}
               type="button"
             >
@@ -76,13 +53,13 @@ export default function TransactionRow({ transaction, role, onDelete, onEdit }) 
   );
 }
 
-function CategoryBadge({ category }) {
-  const icon = CATEGORY_ICONS[category] ?? CATEGORY_ICONS.default;
+function CategoryBadge({ category, isLight }) {
+  const CategoryIcon = getCategoryIcon(category) ?? getFallbackIcon();
   const color = getCategoryColor(category);
 
   return (
-    <div className="grid h-10 w-10 place-items-center rounded-2xl border border-zinc-800 bg-zinc-900 text-lg" style={{ color }}>
-      {icon}
+    <div className={`grid h-10 w-10 place-items-center rounded-2xl border text-lg ${isLight ? 'border-zinc-300 bg-zinc-100' : 'border-zinc-800 bg-zinc-900'}`} style={{ color }}>
+      {createElement(CategoryIcon)}
     </div>
   );
 }

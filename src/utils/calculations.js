@@ -31,7 +31,7 @@ const buildMonthlySummaries = (transactions, months) => {
 };
 
 export const applyTransactionFilters = (transactions, filters) => {
-  return transactions.filter((transaction) => {
+  const filteredTransactions = transactions.filter((transaction) => {
     const typeMatch = filters.type === 'all' || transaction.type === filters.type;
     const categoryMatch = filters.category === 'all' || transaction.category === filters.category;
     const searchMatch = transaction.description.toLowerCase().includes(filters.search.toLowerCase());
@@ -40,6 +40,29 @@ export const applyTransactionFilters = (transactions, filters) => {
 
     return typeMatch && categoryMatch && searchMatch && startMatch && endMatch;
   });
+
+  const sortedTransactions = [...filteredTransactions];
+
+  switch (filters.sortBy) {
+    case 'date-asc':
+      sortedTransactions.sort((left, right) => new Date(left.date) - new Date(right.date));
+      break;
+    case 'amount-desc':
+      sortedTransactions.sort((left, right) => right.amount - left.amount);
+      break;
+    case 'amount-asc':
+      sortedTransactions.sort((left, right) => left.amount - right.amount);
+      break;
+    case 'category-asc':
+      sortedTransactions.sort((left, right) => left.category.localeCompare(right.category));
+      break;
+    case 'date-desc':
+    default:
+      sortedTransactions.sort((left, right) => new Date(right.date) - new Date(left.date));
+      break;
+  }
+
+  return sortedTransactions;
 };
 
 export const getSummary = (transactions) => {
@@ -75,6 +98,20 @@ export const getMonthlyExpenseTrend = (transactions, months = 6) => {
     label: month.label,
     expenses: month.expenses,
   }));
+};
+
+export const getMonthlySavingsRateTrend = (transactions, months = 6) => {
+  return getMonthlyComparison(transactions, months).map((month) => {
+    const savingsRate = month.income > 0 ? (month.income - month.expenses) / month.income : 0;
+
+    return {
+      key: month.key,
+      label: month.label.split(' ')[0],
+      savingsRate,
+      income: month.income,
+      expenses: month.expenses,
+    };
+  });
 };
 
 export const getCategoryTotals = (transactions, categories = CATEGORIES.map((category) => category.name)) => {

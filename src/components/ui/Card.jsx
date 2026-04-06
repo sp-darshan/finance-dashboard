@@ -1,8 +1,12 @@
 import { motion } from 'framer-motion';
+import { useTheme } from '../../hooks/useTheme';
 
 export default function Card({ children, className = '' }) {
+  const { isLight } = useTheme();
+  const MotionDiv = motion.div;
+
   return (
-    <motion.div
+    <MotionDiv
       whileHover={{
         y: -3,
         scale: 1.01,
@@ -10,9 +14,9 @@ export default function Card({ children, className = '' }) {
       }}
       whileTap={{ scale: 0.995 }}
       transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-      className={`rounded-3xl border border-zinc-800 bg-zinc-950/75 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)] backdrop-blur-xl ${className}`}
+      className={`rounded-3xl border p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)] backdrop-blur-xl ${isLight ? 'border-zinc-300 bg-white/80' : 'border-zinc-800 bg-zinc-950/75'} ${className}`}
     >
       {children}
-    </motion.div>
+    </MotionDiv>
   );
 }
