@@ -41,6 +41,15 @@ This dashboard helps users understand their financial activity in one place. It 
 - The dashboard combines trend, comparison and category charts to show different views of the same data.
 - The UI is intentionally kept clean and readable so the data remains the focus.
 
+## Technical Decisions and Trade-offs
+
+- **React + Vite**: Fast dev experience.
+- **Zustand**: Lightweight state management. Zustand has minimal boilerplate with localStorage persistence built in.
+- **Tailwind CSS**: Utility first approach enables rapid styling and theme switching (dark/light) without custom CSS.
+- **Mock API**: Data auto initializes on startup. No external dependencies, works offline, no CORS issues. Trade-off: no backend persistence, but fits for a demo.
+- **Light Mode Default**: Matches user expectations on first load. Dark mode is an option for better UX.
+- **Role-Based UI**: Admin/viewer state toggles during demo without reload. Simple and flexible.
+
 ## Setup Instructions
 
 1. Clone the repository.
